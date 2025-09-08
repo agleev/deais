@@ -1,0 +1,25 @@
+"""
+#Type 5: Static and Voyage Related Data
+
+type = bit_string[:6]
+repeat = bit_string[5:8]
+mmsi =  bit_string[8:38]
+version = bit_string[38:40]
+imo = bit_string[40:70]
+callsign = bit_string[70:112]
+shipname = bit_string[112:232]
+shiptype = bit_string[232:240]
+to_bow = bit_string[240:249]
+to_stern = bit_string[249:258]
+to_port = bit_string[258:264]
+to_starboard = bit_string[264:270]
+epfd = bit_string[270:274]
+month = bit_string[274:278]
+day = bit_string[278:283]
+hour = bit_string[283:288]
+minute = bit_string[288:294]
+draught = bit_string[294:302]
+destination = bit_string[302:422]
+dte = bit_string[422:423]
+spare = bit_string[423:]
+"""
