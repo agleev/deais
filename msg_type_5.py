@@ -36,22 +36,27 @@ ascii_6_dict = {
 }
 
 def get_ascii(value):
-  idx = int(value, 2)
-  return ascii_6_dict[idx&63]
+    idx = int(value, 2)
+    return ascii_6_dict[idx&63]
 
 
 def proc_6bit_chank(binary_string: bytes):
-  if len(binary_string) % 6 !=0 :
-    raise ValueError
+    if len(binary_string) % 6 !=0 :
+        raise ValueError
 
     result=""
     for i in range(0, len(binary_string), 6):
         temp_6b = binary_string[i:i+6]
-        ascii_sym = ascii_from_6b(temp_6b)
+        ascii_sym = get_ascii(temp_6b)
         result+=ascii_sym
     return result
 
 def clear_str_attr(value:str):
     return value.replace("@", "") # 000000 -> "@"
 
+def get_vessel_name(binary_string: bytes):
+    vessel_name = proc_6bit_chank(binary_string)
+    return clear_str_attr(vessel_name)
+
+get_vessel_name('000010010101000111010011011001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000') #'BUGSY'
 
