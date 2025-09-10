@@ -71,7 +71,11 @@ def get_mmsi(val):
 
 def get_msg_type(val):
     return int(val,2)
-    
+
+def bit_shifts(b, shift):
+    b = b >> shift
+    return f"{b}".zfill(6-shift)
+
 def ascii_8b_to_6b(char):
     if char < 96:
         char -= 48
@@ -79,11 +83,15 @@ def ascii_8b_to_6b(char):
         char -= 56
     return char&63
 
-def decode_msg(payload: bytes):
+def decode_msg(payload: bytes, shift:int = 0):
     binary_string = ""
-    for char in payload:
+    for idx, char in enumerate(payload):
         sb = ascii_8b_to_6b(char)
-        binary_string += f"{sb:06b}"
+        if idx == (len(payload) - 1) and shift:
+            sb = bit_shifts(sb)
+            binary_string += sb
+        else:
+            binary_string += f"{sb:06b}"
     return binary_string
     
 def decode_msg_type_1_2_3(ais_msg: str):
