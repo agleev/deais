@@ -51,6 +51,7 @@ def proc_6bit_chank(binary_string: bytes):
         result+=ascii_sym
     return result
 
-
+def clear_str_attr(value:str):
+    return value.replace("@", "") # 000000 -> "@"
 
 
