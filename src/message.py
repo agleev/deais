@@ -37,6 +37,15 @@ def get_heading(val):
     hdg = hdg if (3599 > hdg > 0) else 0
     return hdg
 
+def get_shiptype(val):
+    shiptype = int(val, 2)
+    shiptype = shiptype if (99 > shiptype > 0) else 0
+    return shiptype
+
+def get_draught(val):
+    draught = int(val, 2)
+    return draught/10
+
 def get_mmsi(val):
     return int(val,2)
 
@@ -49,71 +58,81 @@ def get_ship_type(val):
 def get_msg_type(val):
     return int(val,2)
 
+def get_demension_vessel(val):
+    return int(val,2
 
 def clear_str_attr(value:str):
     return value.replace("@", "") # 000000 -> "@"
 
-def get_vessel_name(binary_string: bytes):
-    vessel_name = proc_6bit_cha(binary_string)
+def get_vessel_name(bit_string: bytes):
+    vessel_name = proc_6bit_cha(bit_string)
     return clear_str_attr(vessel_name)
 
-def get_string_field(binary_string: bytes):
-    string_field = proc_6bit_cha(binary_string)
+def get_string_field(bit_string: bytes):
+    string_field = proc_6bit_cha(bit_string)
     return clear_str_attr(string_field)
 
-#MSGS_TYPES
-def decode_msg_type_1_2_3(binary_string: str):
+def get_eta(val, threshold):
+    eta_attr = int(val, 2)
+    eta_attr = eta_attr if eta_attr <= threshold else 0
+    return eta_attr
     
-    type = get_msg_type(binary_string[:6])
-    repeat = binary_string[5:8]
-    mmsi =  get_mmsi(binary_string[8:38])
-    status = get_nav_status(binary_string[38:42])
-    rot = get_rot(binary_string[42:50])
-    sog = get_sog(binary_string[50:60])
-    accuracy = binary_string[60:61]
-    lon = get_lan_lot(binary_string[61:89])
-    lat = get_lan_lot(binary_string[89:116])
-    cog = get_cog(binary_string[116:128])
-    heading = get_heading(binary_string[128:137])
-    second = binary_string[137:143]
-    maneuver = binary_string[143:145]
-    spare = binary_string[145:148]
-    raim = binary_string[148:149]
-    radio = binary_string[149:]
+#MSGS_TYPES
+def decode_msg_type_1_2_3(bit_string: str):
+    
+    type = get_msg_type(bit_string[:6])
+    repeat = bit_string[5:8]
+    mmsi =  get_mmsi(bit_string[8:38])
+    status = get_nav_status(bit_string[38:42])
+    rot = get_rot(bit_string[42:50])
+    sog = get_sog(bit_string[50:60])
+    accuracy = bit_string[60:61]
+    lon = get_lan_lot(bit_string[61:89])
+    lat = get_lan_lot(bit_string[89:116])
+    cog = get_cog(bit_string[116:128])
+    heading = get_heading(bit_string[128:137])
+    second = bit_string[137:143]
+    maneuver = bit_string[143:145]
+    spare = bit_string[145:148]
+    raim = bit_string[148:149]
+    radio = bit_string[149:]
 
     return f"""{type};{mmsi};{status};{rot};{sog};{lon};{lat};{cog};{heading}"""
 
+def decode_msg_type_5(bit_string: str):
 
-
-def decode_msg_type_5(binary_string: str):
-
-    type = get_msg_type(binary_string[:6])
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  get_mmsi(binary_string[8:38])
+    mmsi =  get_mmsi(bit_string[8:38])
     version = bit_string[38:40]
     imo = get_imo(bit_string[40:70])
     callsign = get_string_field(bit_string[70:112])
     shipname = get_string_field(bit_string[112:232])
-    shiptype = get_string_field(bit_string[232:240])
-    to_bow = bit_string[240:249]
-    to_stern = bit_string[249:258]
-    to_port = bit_string[258:264]
-    to_starboard = bit_string[264:270]
+    shiptype = get_shiptype(bit_string[232:240])
+    to_bow = get_demension_vessel(bit_string[240:249])
+    to_stern = get_demension_vessel(bit_string[249:258])
+    to_port = get_demension_vessel(bit_string[258:264])
+    to_starboard = get_demension_vessel(bit_string[264:270])
     epfd = bit_string[270:274]
-    month = bit_string[274:278]
-    day = bit_string[278:283]
-    hour = bit_string[283:288]
-    minute = bit_string[288:294]
-    draught = bit_string[294:302]
+    
+    month = get_eta(bit_string[274:278], threshold=12)
+    day = get_eta(bit_string[278:283], threshold=31)
+    hour = get_eta(bit_string[283:288], threshold=23)
+    minute = get_eta(bit_string[288:294], ,threshold=59)
+    
+    draught = get_draught(bit_string[294:302])
+    
     destination = get_string_field(bit_string[302:422])
     dte = bit_string[422:423]
     spare = bit_string[423:]
 
+    return f"""{type};{mmsi};{imo};{callsign};{shipname};{shiptype};{to_bow};{to_stern};{to_port};{to_starboard};{month};{day};{hour};{minute};{draught};{destination}"""
+
     
 
-def decode_msg_type_4_11():
+def decode_msg_type_4_11(bit_string):
     
-    type = get_msg_type(binary_string[:6])
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
 
@@ -132,9 +151,11 @@ def decode_msg_type_4_11():
     raim = bit_string[148:149]
     radio = bit_string[149:]
 
-def decode_msg_type_18():
+     return f"""{type};{mmsi};{imo};{lon};{lat}"""
 
-    type = get_msg_type(binary_string[:6])
+def decode_msg_type_18(bit_string):
+
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
 
@@ -156,11 +177,12 @@ def decode_msg_type_18():
     assigned = bit_string[146:147]
     raim = bit_string[147:148]
     radio = bit_string[148:]
+    
+    return f"""{type};{mmsi};{sog};{lon};{lat};{cog};{heading}"""
 
+def decode_msg_type_19(bit_string):
 
-def decode_msg_type_19():
-
-    type = get_msg_type(binary_string[:6])
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
 
@@ -175,22 +197,24 @@ def decode_msg_type_19():
     second = bit_string[133:139]
     regional = bit_string[139:143]
     shipname = get_string_field(bit_string[143:263])
-    shiptype = bit_string[263:271]
+    shiptype = get_shiptype(bit_string[263:271])
 
-    to_bow = bit_string[271:280]
-    to_stern = bit_string[280:289]
-    to_port = bit_string[289:295]
-    to_starboard = bit_string[295:301]
+    to_bow = get_demension_vessel(bit_string[271:280])
+    to_stern = get_demension_vessel(bit_string[280:289])
+    to_port = get_demension_vessel(bit_string[289:295])
+    to_starboard = get_demension_vessel(bit_string[295:301])
 
     epfd = bit_string[301:305]
     raim = bit_string[305:306]
     dte = bit_string[306:307]
     assigned = bit_string[307:308]
     spare = bit_string[308:]
-
-def decode_msg_type_24a():
     
-    type = get_msg_type(binary_string[:6])
+    return f"""{type};{mmsi};{sog};{lon};{lat};{cog};{heading};{shipname};{shiptype};{to_bow};{to_stern};{to_port};{to_starboard}"""
+
+def decode_msg_type_24a(bit_string):
+    
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
 
@@ -198,33 +222,36 @@ def decode_msg_type_24a():
     shipname = get_string_field(bit_string[40:160])
     spare = bit_string[160:]
 
+    return f"""{type};{mmsi};{shipname}"""
+
 
 def decode_msg_type_24b():
 
-    type = get_msg_type(binary_string[:6])
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
 
     partno = bit_string[38:40]
 
-    shiptype = bit_string[40:48]
+    shiptype = get_shiptype(bit_string[40:48])
 
     vendorid = bit_string[48:66]
     model = bit_string[66:70]
     serial = bit_string[70:90]
     callsign = get_string_field(bit_string[90:132])
 
-    to_bow = bit_string[132:141]
-    to_stern = bit_string[141:150]
-    to_port = bit_string[150:156]
-    to_starboard = bit_string[156:162]
+    to_bow = get_demension_vessel(bit_string[132:141])
+    to_stern = get_demension_vessel(bit_string[141:150])
+    to_port = get_demension_vessel(bit_string[150:156])
+    to_starboard = get_demension_vessel(bit_string[156:162])
 
     spare = bit_string[162:]
-
-
-def decode_msg_type_27():
     
-    type = get_msg_type(binary_string[:6])
+    return f"""{type};{mmsi};{shiptype};{callsign};{to_bow};{to_stern};{to_port};{to_starboard}"""
+
+def decode_msg_type_27(bit_string):
+    
+    type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
 
@@ -236,6 +263,8 @@ def decode_msg_type_27():
     sog = get_sog(bit_string[79:85])
     cog = get_сog(bit_string[85:94])
     gnss = bit_string[94:95] 
+
+    return f"""{type};{mmsi};{status};{lon};{lat};{sog};{cog}"""
 
 
 
