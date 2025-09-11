@@ -2,7 +2,7 @@ import math
 from .decode import (
     bin_to_signed_dec,
     proc_6bit_cha
-)
+)            
 
 def get_lan_lot(val):
     val = bin_to_signed_dec(val)
@@ -40,6 +40,12 @@ def get_heading(val):
 def get_mmsi(val):
     return int(val,2)
 
+def get_imo(val):
+    return int(val,2)
+
+def get_ship_type(val):
+    return int(val, 2)
+
 def get_msg_type(val):
     return int(val,2)
 
@@ -51,29 +57,12 @@ def get_vessel_name(binary_string: bytes):
     vessel_name = proc_6bit_cha(binary_string)
     return clear_str_attr(vessel_name)
 
-
-    
+def get_string_field(binary_string: bytes):
+    string_field = proc_6bit_cha(binary_string)
+    return clear_str_attr(string_field)
 
 #MSGS_TYPES
 def decode_msg_type_1_2_3(binary_string: str):
-    """
-    type = bit_string[:6]
-    repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
-    status = bit_string[38:42]
-    turn = bit_string[42:50]
-    speed = bit_string[50:60]
-    accuracy = bit_string[60:61]
-    lon = bit_string[61:89]
-    lat = bit_string[89:116]
-    course = bit_string[116:128]
-    heading = bit_string[128:137]
-    second = bit_string[137:143]
-    maneuver = bit_string[143:145]
-    spare = bit_string[145:148]
-    raim = bit_string[148:149]
-    radio = bit_string[149:]
-    """
     
     type = get_msg_type(binary_string[:6])
     repeat = binary_string[5:8]
@@ -97,17 +86,15 @@ def decode_msg_type_1_2_3(binary_string: str):
 
 
 def decode_msg_type_5(binary_string: str):
-    """
-    #Type 5: Static and Voyage Related Data
 
-    type = bit_string[:6]
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(binary_string[8:38])
     version = bit_string[38:40]
-    imo = bit_string[40:70]
-    callsign = bit_string[70:112]
-    shipname = bit_string[112:232]
-    shiptype = bit_string[232:240]
+    imo = get_imo(bit_string[40:70])
+    callsign = get_string_field(bit_string[70:112])
+    shipname = get_string_field(bit_string[112:232])
+    shiptype = get_string_field(bit_string[232:240])
     to_bow = bit_string[240:249]
     to_stern = bit_string[249:258]
     to_port = bit_string[258:264]
@@ -118,20 +105,17 @@ def decode_msg_type_5(binary_string: str):
     hour = bit_string[283:288]
     minute = bit_string[288:294]
     draught = bit_string[294:302]
-    destination = bit_string[302:422]
+    destination = get_string_field(bit_string[302:422])
     dte = bit_string[422:423]
     spare = bit_string[423:]
-    """
-    pass
+
+    
 
 def decode_msg_type_4_11():
-    """
-    #Type 4: Base Station Report
-    #Type 11: UTC/Date Response
-
-    type = bit_string[:6]
+    
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(bit_string[8:38])
 
     year = bit_string[38:52]
     month = bit_string[52:56]
@@ -141,33 +125,26 @@ def decode_msg_type_4_11():
     second = bit_string[72:78]
 
     accuracy = bit_string[78:79]
-    lon = bit_string[79:107]
-    lat = bit_string[107:134]
+    lon = get_lan_lot(bit_string[79:107])
+    lat = get_lan_lot(bit_string[107:134])
     epfd = bit_string[134:138]
     spare = bit_string[138:148]
     raim = bit_string[148:149]
     radio = bit_string[149:]
 
-    """
-    
-    
-    pass
-
 def decode_msg_type_18():
-    """
-    #Type 18: Standard Class B CS Position Report
 
-    type = bit_string[:6]
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(bit_string[8:38])
 
     reserved = bit_string[38:46]
-    sog = bit_string[46:56]
+    sog = get_sog(bit_string[46:56])
     accuracy = bit_string[56:57]
-    lon = bit_string[57:85]
-    lat = bit_string[85:112]
-    cog = bit_string[112:124]
-    heading = bit_string[124:133]
+    lon = get_lan_lot(bit_string[57:85])
+    lat = get_lan_lot(bit_string[85:112])
+    cog = get_cog(bit_string[112:124])
+    heading = get_heading(bit_string[124:133])
 
     second = bit_string[133:139]
     regional = bit_string[139:141]
@@ -180,29 +157,24 @@ def decode_msg_type_18():
     raim = bit_string[147:148]
     radio = bit_string[148:]
 
-    """
-    pass
-
 
 def decode_msg_type_19():
-    """
-    Type 19: Extended Class B CS Position Report
 
-    type = bit_string[:6]
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(bit_string[8:38])
 
     reserved = bit_string[38:46]
-    sog = bit_string[46:56]
+    sog = get_sog(bit_string[46:56])
     accuracy = bit_string[56:57]
-    lon = bit_string[57:85]
-    lat = bit_string[85:112]
-    cog = bit_string[112:124]
-    heading = bit_string[124:133]
+    lon = get_lan_lot(bit_string[57:85])
+    lat = get_lan_lot(bit_string[85:112])
+    cog = get_cog(bit_string[112:124])
+    heading = get_heading(bit_string[124:133])
 
     second = bit_string[133:139]
     regional = bit_string[139:143]
-    shipname = bit_string[143:263]
+    shipname = get_string_field(bit_string[143:263])
     shiptype = bit_string[263:271]
 
     to_bow = bit_string[271:280]
@@ -215,34 +187,23 @@ def decode_msg_type_19():
     dte = bit_string[306:307]
     assigned = bit_string[307:308]
     spare = bit_string[308:]
-    """
-    
-    pass
 
 def decode_msg_type_24a():
-    """
-    #Type 24A: Static Data Report
-
-    type = bit_string[:6]
+    
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(bit_string[8:38])
 
     partno = bit_string[38:40]
-    shipname = bit_string[40:160]
+    shipname = get_string_field(bit_string[40:160])
     spare = bit_string[160:]
 
 
-    """
-    pass
-
-
 def decode_msg_type_24b():
-    """
-    #Type 24B: Static Data Report
 
-    type = bit_string[:6]
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(bit_string[8:38])
 
     partno = bit_string[38:40]
 
@@ -251,7 +212,7 @@ def decode_msg_type_24b():
     vendorid = bit_string[48:66]
     model = bit_string[66:70]
     serial = bit_string[70:90]
-    callsign = bit_string[90:132]
+    callsign = get_string_field(bit_string[90:132])
 
     to_bow = bit_string[132:141]
     to_stern = bit_string[141:150]
@@ -260,27 +221,21 @@ def decode_msg_type_24b():
 
     spare = bit_string[162:]
 
-    """
-    pass
-
-
 
 def decode_msg_type_27():
-    """
-    #Type 27: Long Range AIS Broadcast message
-
-    type = bit_string[:6]
+    
+    type = get_msg_type(binary_string[:6])
     repeat = bit_string[5:8]
-    mmsi =  bit_string[8:38]
+    mmsi =  get_mmsi(bit_string[8:38])
 
     accuracy = bit_string[38:39]
     raim = bit_string[39:40]
-    status = bit_string[40:44]
-    lon = bit_string[44:62]
-    lat = bit_string[62:79]
-    sog = bit_string[79:85]
-    course = bit_string[85:94]
+    status = get_nav_status(bit_string[40:44])
+    lon = get_lan_lot(bit_string[44:62])
+    lat = get_lan_lot(bit_string[62:79])
+    sog = get_sog(bit_string[79:85])
+    cog = get_сog(bit_string[85:94])
     gnss = bit_string[94:95] 
-    spare = bit_string[95:] 
-    """
-    pass
+
+
+
