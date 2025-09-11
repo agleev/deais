@@ -50,7 +50,7 @@ s1 = [
         '!AIVDM,2,2,0,A,000000000>Ih,4*3D'
     ]
 s2 = '!AIVDM,1,1,,A,13aG`h0P000Htt<N0D0l4@T40000,0*7C'
-for raw in [s2]:
+for raw in [s1, s2]:
     payload, shift = decode_ais_multipart(raw)
     print(f"{payload}\n{shift}")
     
