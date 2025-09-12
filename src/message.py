@@ -59,7 +59,7 @@ def get_msg_type(val):
     return int(val,2)
 
 def get_demension_vessel(val):
-    return int(val,2
+    return int(val,2)
 
 def clear_str_attr(value:str):
     return value.replace("@", "") # 000000 -> "@"
