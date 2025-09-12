@@ -1,11 +1,11 @@
-
+from typing import Union, List, Tuple
 from .decode import decode_msg
 
 def get_msg_parts(raw: str):
     return raw.split(",")
 
 
-def decode_ais_multipart(messages):
+def decode_ais_multipart(messages: Union[str, List[str]]) -> Tuple[str, int]:
 
     if isinstance(messages, str):
         messages = [messages]
@@ -44,6 +44,14 @@ def decode_ais_multipart(messages):
         shift = 0
     
     return payloads, shift
+    
+def ais_decode(raw):
+    if not raw:
+        return f"Empty message: {raw}"
+    
+    payload, shift = preproc_multipart_msg(raw)
+    print(decode_msg(payload.encode(), shift))
+
 
 s1 = [
         '!AIVDM,2,1,0,A,544tCa`00001D9USD0084LU8400000000000000010N33vD`N3BhDPEC880000,0*69',
