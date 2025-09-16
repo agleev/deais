@@ -13,12 +13,48 @@ ascii_6_dict = {
     56: '8',  57: '9',  58: ':',  59: ';',  60: '<',  61: '=',  62: '>',  63: '?'
 }
 
-def get_ascii(value):
+def get_ascii(value:str) -> str:
+    """
+    Преобразует двоичную строку в соотвествующий ASCII-символ.
+
+    Функция принимает на вход двоиную строку, преобразует ее в целое число,
+    извлекает младшие 6 бит (через побитовую операцию И) и возвращает символ
+    имз словаря ascii_6_dict.
+
+    Args:
+        value (str): Двоичная строка (например, "000010", "010100")
+    Returns:
+        str: ASCII-символ из словаря ascii_6_dict.
+
+    Example:
+        >>> get_ascii("100001")
+        'B'
+        
+        >>> get_ascii("010100")
+        'T'
+        
+    """
     idx = int(value, 2)
     return ascii_6_dict[idx&63]
 
 
-def proc_6bit_cha(binary_string: bytes):
+def proc_6bit_cha(binary_data: str) -> str:
+    """
+    Декодирует бинарные данные из 6-битной последовательности в строку из ASCII-символов.
+
+    Функция принимает на вход двоиную строку, разбивает ее на 6-битные блоки и 
+    каждый блок преобразуем в соответсвующий ASCII-символ с помощью функции get_ascii().
+
+    Args:
+        binary_data (str): бинарная строка (например, "000010010100")
+    Returns:
+        str: строка из ASCII-символов.
+
+    Example:
+        >>> proc_6bit_cha("000010010100")
+        'BT'
+        
+    """
     if len(binary_string) % 6 !=0 :
         raise ValueError
 
@@ -29,7 +65,26 @@ def proc_6bit_cha(binary_string: bytes):
         result+=ascii_sym
     return result
 
-def bin_to_signed_dec(val):
+def bin_to_signed(val: str) -> int:
+    """
+    Преобразует двоичную строку в знаковое десятичсное число.
+
+    Функция принимает на вход двоиную строку, определеяет знак числа по старшему биту,
+    преобразует в отрицательносе десятичное представление.
+
+    Args:
+        val (str): двоичная строка, старший бит определяет знак
+    Returns:
+        int: знаковое десятичное число.
+
+    Example:
+        >>> bin_to_signed("1010110011110101101101001011")
+        -87073973
+        
+        >>> bin_to_signed("0010110011110101101101001011")
+        47143755
+        
+    """
     n = len(val)
     num = int(val, 2)
 
@@ -40,7 +95,26 @@ def bin_to_signed_dec(val):
         res = num
     return res
 
-def bit_shifts(b, shift):
+def bit_shifts(b:int, shift:int):
+    """
+    Битовый сдвиг числа вправо.
+
+    Функция принимает на вход числовое значение b и shift - количество младших битов, которые нужно игнорировать до 6-битной границы. 
+
+    Args:
+        b (int): числовое значение для обработки.
+        shift (int): количество битов заполнения.
+    Returns:
+        
+
+    Example:
+        >>> bit_shifts("")
+        
+        
+        >>> bit_shifts("")
+        
+        
+    """
     b = b >> shift
     return f"{b}".zfill(6-shift)
 
