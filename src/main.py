@@ -57,14 +57,15 @@ def ais_decode(raw):
     msg_values = message.call(msg_type, binary_string)
     return msg_values
 
+if __name__ == "__main__":
+    
+    s1 = [
+        [
+            '!AIVDM,2,1,0,A,544tCa`00001D9USD0084LU8400000000000000010N33vD`N3BhDPEC880000,0*69',
+            '!AIVDM,2,2,0,A,000000000>Ih,4*3D',
+        ],
+    '!AIVDM,1,1,,A,13aG`h0P000Htt<N0D0l4@T40000,0*7C'
+    ]
 
-s1 = [
-    [
-        '!AIVDM,2,1,0,A,544tCa`00001D9USD0084LU8400000000000000010N33vD`N3BhDPEC880000,0*69',
-        '!AIVDM,2,2,0,A,000000000>Ih,4*3D',
-    ],
-'!AIVDM,1,1,,A,13aG`h0P000Htt<N0D0l4@T40000,0*7C'
-]
-
-for raw in s1:
-    print(ais_decode(raw))
+    for raw in s1:
+        print(ais_decode(raw))
