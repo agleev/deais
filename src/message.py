@@ -1,217 +1,33 @@
-import math
-from .decode import (
-    bin_to_signed,
-    proc_6bit_cha
-)            
+from functools import wraps
 
-def get_lan_lot(val:str) -> float:
-    """
-    Преобразует битовую последовательность в долготу/широту.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        float: долгота/широта в градусах.
-        
-    """
-    val = bin_to_signed(val)
-    return round(val / 600_000, 6)
-
-def get_sog(val:str) -> float:
-    """
-    Преобразует битовую последовательность в скорость.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        float: скорость в узлах.
-        
-    """
-    val = int(val, 2)
-    val = val if (val < 1022) else 1022 
-    return val / 10
-
-def get_rot(val:str) -> float:
-    """
-    Преобразует битовую последовательность в угловую скорость поворота судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        float: скорость градусы/минута.
-        
-    """
-    turn = bin_to_signed(val)
-    if not turn:
-        return 0
-    if abs(turn) in (127, 128):
-        return turn
-    rot = int(math.sqrt(abs(turn)) * 4.733)
-    if turn < 0:
-        rot*=-1
-    return rot
-
-def get_cog(val:str) -> float:
-    """
-    Преобразует битовую последовательность в фактический курс движения судна относительно севера.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        float: угол в градусах.
-        
-    """
-    cog = int(val, 2)
-    cog = cog if (3599 > cog > 0) else 0
-    return cog / 10
-
-def get_nav_status(val:str) -> int:
-    """
-    Преобразует битовую последовательность в навигационный статус судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        int: код статуса.
-        
-    """
-    return int(val, 2)
-
-def get_heading(val:str) -> int:
-    """
-    Преобразует битовую последовательность в навигационный статус судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        int: код статуса.
-        
-    """
-    hdg = int(val, 2)
-    hdg = hdg if (359 > hdg > 0) else 0
-    return hdg
-
-def get_shiptype(val:str) -> int:
-    """
-    Преобразует битовую последовательность в код типа судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        int: код типа судна.
-        
-    """
-    shiptype = int(val, 2)
-    shiptype = shiptype if (99 > shiptype > 0) else 0
-    return shiptype
-
-def get_draught(val:str) -> float:
-    """
-    Преобразует битовую последовательность в уровень осадки судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        float: осадка судна в метрах.
-        
-    """
-    draught = int(val, 2)
-    return draught/10
-
-def get_mmsi(val:str) -> int:
-    """
-    Преобразует битовую последовательность в MMSI.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        int: ID приемника судна в системе  АИС.
-        
-    """
-    return int(val,2)
-
-def get_imo(val:str) -> int:
-    """
-    Преобразует битовую последовательность в IMO судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        int: ID в реестре Международной морской организации.
-        
-    """
-    return int(val,2)
-
-def get_msg_type(val:str) -> int:
-    """
-    Преобразует битовую последовательность в тип сообщения АИС.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        int: тип сообщения АИС.
-        
-    """
-    return int(val,2)
-
-def get_demension_vessel(val:str) -> int:
-    """
-    Преобразует битовую последовательность в расстояние от
-    антены передатчика до носа/кормы/правого и левого бортов судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        float: расстание в метрах.
-        
-    """
-    return int(val,2)
-
-def clear_str_attr(value:str):
-    return value.replace("@", "") # 000000 -> "@"
-
-def get_string_field(bit_string:str) -> str:
-    """
-    Преобразует битовую последовательность в строковые атрибуты судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        str: строка из ASCII-символов.
-        
-    """
-    string_field = proc_6bit_cha(bit_string)
-    return clear_str_attr(string_field)
-
-def get_eta(val, threshold):
-    """
-    Преобразует битовую последовательность в расчетные дату и время прибытия судна.
-
-    Args:
-        val (str): битовая последовательность.
-
-    Returns:
-        str: отметка минуты/часа/дня/месяца.
-        
-    """
-    eta_attr = int(val, 2)
-    eta_attr = eta_attr if eta_attr <= threshold else 0
-    return f"{eta_attr:02d}"
-    
+from values import *
 #MSGS_TYPES
+
+# def create_register():
+    
+register_types = {}
+
+def register_func(msg_type):
+    """
+    Декоратор для регистрации функции-обработчика для определенного типа данных.
+
+    Args:
+        msg_type (int): тип сообщения АИС.
+    """
+    def deco(func):
+        register_types[msg_type] = func
+        return func
+    return deco
+
+def call(msg_type,*args,**kwargs):
+    if msg_type not in register_types:
+        raise ValueError
+    return register_types[msg_type](*args,**kwargs)
+
+
+@register_func(1)
+@register_func(2)
+@register_func(3)
 def parse_ais_type_1_2_3(bit_string:str) -> str:
     
     """
@@ -247,6 +63,7 @@ def parse_ais_type_1_2_3(bit_string:str) -> str:
 
     return f"""{type};{mmsi};{status};{rot};{sog};{lon};{lat};{cog};{heading}"""
 
+@register_func(5)
 def parse_ais_type_5(bit_string:str) -> str:
 
     """
@@ -290,8 +107,8 @@ def parse_ais_type_5(bit_string:str) -> str:
 
     return f"""{type};{mmsi};{imo};{callsign};{shipname};{shiptype};{to_bow};{to_stern};{to_port};{to_starboard};{month};{day};{hour};{minute};{draught};{destination}"""
 
-    
-
+@register_func(4)
+@register_func(11)
 def parse_ais_type_4_11(bit_string:str) -> str:
 
     """
@@ -329,6 +146,7 @@ def parse_ais_type_4_11(bit_string:str) -> str:
 
     return f"""{type};{mmsi};{imo};{lon};{lat}"""
 
+@register_func(18)
 def parse_ais_type_18(bit_string:str) -> str:
     
     """
@@ -369,6 +187,7 @@ def parse_ais_type_18(bit_string:str) -> str:
     
     return f"""{type};{mmsi};{sog};{lon};{lat};{cog};{heading}"""
 
+@register_func(19)
 def parse_ais_type_19(bit_string:str) -> str:
 
     """
@@ -415,6 +234,7 @@ def parse_ais_type_19(bit_string:str) -> str:
     
     return f"""{type};{mmsi};{sog};{lon};{lat};{cog};{heading};{shipname};{shiptype};{to_bow};{to_stern};{to_port};{to_starboard}"""
 
+@register_func('24a')
 def parse_ais_type_24a(bit_string:str) -> str:
     """
     Декомпозиция 24 типа сообщения АИС для судна класса A.
@@ -440,7 +260,7 @@ def parse_ais_type_24a(bit_string:str) -> str:
 
     return f"""{type};{mmsi};{shipname}"""
 
-
+@register_func('24b')
 def parse_ais_type_24b(bit_string:str) -> str:
     """
     Декомпозиция 24 типа сообщения АИС для судна класса B.
@@ -478,6 +298,7 @@ def parse_ais_type_24b(bit_string:str) -> str:
     
     return f"""{type};{mmsi};{shiptype};{callsign};{to_bow};{to_stern};{to_port};{to_starboard}"""
 
+@register_func(27)
 def parse_ais_type_27(bit_string:str) -> str:
     """
     Декомпозиция 27 типа сообщения АИС.
@@ -507,6 +328,3 @@ def parse_ais_type_27(bit_string:str) -> str:
     gnss = bit_string[94:95] 
 
     return f"""{type};{mmsi};{status};{lon};{lat};{sog};{cog}"""
-
-
-

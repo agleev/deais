@@ -95,7 +95,7 @@ def bin_to_signed(val: str) -> int:
         res = num
     return res
 
-def bit_shifts(b:int, shift:int):
+def bit_shifts(b:int, shift:int=0):
     """
     Битовый сдвиг числа вправо.
 

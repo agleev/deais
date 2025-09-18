@@ -1,11 +1,13 @@
 from typing import Union, List, Tuple
-from .decode import decode_msg
+import message
+from decode import decode_msg
+from values import get_msg_type
 
 def get_msg_parts(raw: str):
     return raw.split(",")
 
 
-def decode_ais_multipart(messages: Union[str, List[str]]) -> Tuple[str, int]:
+def preproc_multipart_msg(messages: Union[str, List[str]]) -> Tuple[str, int]:
 
     if isinstance(messages, str):
         messages = [messages]
@@ -24,7 +26,7 @@ def decode_ais_multipart(messages: Union[str, List[str]]) -> Tuple[str, int]:
         nfrag = int(nfrag)
         
         if not package_name.startswith('!AIVDM'):
-            raise ValueError 
+            raise ValueError
             
         parts[nfrag] = payload
         total_parts = cfrags
@@ -34,7 +36,7 @@ def decode_ais_multipart(messages: Union[str, List[str]]) -> Tuple[str, int]:
         if i in parts:
             payloads += parts[i]
         else:
-            raise ValueError
+            raise ValueError(f"No found part of message, total: {total_parts}")
     
 
     shift = shift_sum.split('*')[0]
@@ -50,15 +52,19 @@ def ais_decode(raw):
         return f"Empty message: {raw}"
     
     payload, shift = preproc_multipart_msg(raw)
-    print(decode_msg(payload.encode(), shift))
+    binary_string = decode_msg(payload.encode(), shift)
+    msg_type = get_msg_type(binary_string[:6])
+    msg_values = message.call(msg_type, binary_string)
+    return msg_values
 
 
 s1 = [
+    [
         '!AIVDM,2,1,0,A,544tCa`00001D9USD0084LU8400000000000000010N33vD`N3BhDPEC880000,0*69',
-        '!AIVDM,2,2,0,A,000000000>Ih,4*3D'
-    ]
-s2 = '!AIVDM,1,1,,A,13aG`h0P000Htt<N0D0l4@T40000,0*7C'
-for raw in [s1, s2]:
-    payload, shift = decode_ais_multipart(raw)
-    print(f"{payload}\n{shift}")
-    
+        '!AIVDM,2,2,0,A,000000000>Ih,4*3D',
+    ],
+'!AIVDM,1,1,,A,13aG`h0P000Htt<N0D0l4@T40000,0*7C'
+]
+
+for raw in s1:
+    print(ais_decode(raw))
