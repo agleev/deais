@@ -78,7 +78,21 @@ def get_eta(val, threshold):
     return eta_attr
     
 #MSGS_TYPES
-def decode_msg_type_1_2_3(bit_string: str):
+def parse_ais_type_1_2_3(bit_string:str) -> str:
+    
+    """
+    Декомпозиция 1,2 и 3 типов сообщений АИС.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """ 
     
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -99,7 +113,21 @@ def decode_msg_type_1_2_3(bit_string: str):
 
     return f"""{type};{mmsi};{status};{rot};{sog};{lon};{lat};{cog};{heading}"""
 
-def decode_msg_type_5(bit_string: str):
+def parse_ais_type_5(bit_string:str) -> str:
+
+    """
+    Декомпозиция 5 типа сообщения АИС.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """ 
 
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -118,7 +146,7 @@ def decode_msg_type_5(bit_string: str):
     month = get_eta(bit_string[274:278], threshold=12)
     day = get_eta(bit_string[278:283], threshold=31)
     hour = get_eta(bit_string[283:288], threshold=23)
-    minute = get_eta(bit_string[288:294], ,threshold=59)
+    minute = get_eta(bit_string[288:294], threshold=59)
     
     draught = get_draught(bit_string[294:302])
     
@@ -130,7 +158,21 @@ def decode_msg_type_5(bit_string: str):
 
     
 
-def decode_msg_type_4_11(bit_string):
+def parse_ais_type_4_11(bit_string:str) -> str:
+
+    """
+    Декомпозиция 4 и 11 типов сообщений АИС.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """ 
     
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -151,10 +193,23 @@ def decode_msg_type_4_11(bit_string):
     raim = bit_string[148:149]
     radio = bit_string[149:]
 
-     return f"""{type};{mmsi};{imo};{lon};{lat}"""
+    return f"""{type};{mmsi};{imo};{lon};{lat}"""
 
-def decode_msg_type_18(bit_string):
-
+def parse_ais_type_18(bit_string:str) -> str:
+    
+    """
+    Декомпозиция 18 типа сообщения АИС.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """ 
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
     mmsi =  get_mmsi(bit_string[8:38])
@@ -180,7 +235,21 @@ def decode_msg_type_18(bit_string):
     
     return f"""{type};{mmsi};{sog};{lon};{lat};{cog};{heading}"""
 
-def decode_msg_type_19(bit_string):
+def parse_ais_type_19(bit_string:str) -> str:
+
+    """
+    Декомпозиция 19 типа сообщения АИС.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """ 
 
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -212,7 +281,20 @@ def decode_msg_type_19(bit_string):
     
     return f"""{type};{mmsi};{sog};{lon};{lat};{cog};{heading};{shipname};{shiptype};{to_bow};{to_stern};{to_port};{to_starboard}"""
 
-def decode_msg_type_24a(bit_string):
+def parse_ais_type_24a(bit_string:str) -> str:
+    """
+    Декомпозиция 24 типа сообщения АИС для судна класса A.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """    
     
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -225,7 +307,20 @@ def decode_msg_type_24a(bit_string):
     return f"""{type};{mmsi};{shipname}"""
 
 
-def decode_msg_type_24b():
+def parse_ais_type_24b(bit_string:str) -> str:
+    """
+    Декомпозиция 24 типа сообщения АИС для судна класса B.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """    
 
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -249,7 +344,20 @@ def decode_msg_type_24b():
     
     return f"""{type};{mmsi};{shiptype};{callsign};{to_bow};{to_stern};{to_port};{to_starboard}"""
 
-def decode_msg_type_27(bit_string):
+def parse_ais_type_27(bit_string:str) -> str:
+    """
+    Декомпозиция 27 типа сообщения АИС.
+    
+    Функция принимает на вход бинарную строку,
+    разбивает последовательность бит по заданным правилам
+    и преобразует атрибуты данных согласно спецификации
+    
+    Args:
+        binary_data (str): бинарная строка.
+    Returns:
+        str: строка с атрибутами сообщения.
+    
+    """
     
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -261,7 +369,7 @@ def decode_msg_type_27(bit_string):
     lon = get_lan_lot(bit_string[44:62])
     lat = get_lan_lot(bit_string[62:79])
     sog = get_sog(bit_string[79:85])
-    cog = get_сog(bit_string[85:94])
+    cog = get_cog(bit_string[85:94])
     gnss = bit_string[94:95] 
 
     return f"""{type};{mmsi};{status};{lon};{lat};{sog};{cog}"""
