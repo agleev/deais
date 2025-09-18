@@ -55,12 +55,12 @@ def proc_6bit_cha(binary_data: str) -> str:
         'BT'
         
     """
-    if len(binary_string) % 6 !=0 :
+    if len(binary_data) % 6 !=0 :
         raise ValueError
 
     result=""
-    for i in range(0, len(binary_string), 6):
-        temp_6b = binary_string[i:i+6]
+    for i in range(0, len(binary_data), 6):
+        temp_6b = binary_data[i:i+6]
         ascii_sym = get_ascii(temp_6b)
         result+=ascii_sym
     return result
@@ -99,33 +99,70 @@ def bit_shifts(b:int, shift:int):
     """
     Битовый сдвиг числа вправо.
 
-    Функция принимает на вход числовое значение b и shift - количество младших битов, которые нужно игнорировать до 6-битной границы. 
+    Функция принимает на вход числовое значение b
+    и shift - количество младших битов, которые нужно игнорировать
+    до ближайшей границы 6 бит. 
 
     Args:
         b (int): числовое значение для обработки.
         shift (int): количество битов заполнения.
     Returns:
-        
+        str: Двоичная строка
 
     Example:
-        >>> bit_shifts("")
+        >>> bit_shifts(43,2)
+        '1010'
         
-        
-        >>> bit_shifts("")
-        
+        >>> bit_shifts(23,3)
+        '010'
         
     """
     b = b >> shift
-    return f"{b}".zfill(6-shift)
+    return f"{b:b}".zfill(6-shift)
 
-def ascii_8b_to_6b(char):
+def ascii_8b_to_6b(char:int) -> int:
+    """
+    Преобразует 8-битный ASCII-код символа в 6-битное значение.
+    
+    Функция принимает на вход числовой код из 8-битной таблицы символов ASCII
+    и преобразует его в число 6-битной таблицы символов ASCII по заданному правилу. 
+    
+    Args:
+        char (int): ASCII-код символа в диапазоне 0-255 
+    Returns:
+        int: 6-битное значение в диапазоне 0-63
+        
+    Example:
+        >>> ascii_8b_to_6b(48)
+        0
+        
+        >>> ascii_8b_to_6b(57)
+        9
+        
+    """
     if char < 96:
         char -= 48
     else:
         char -= 56
     return char&63
 
-def decode_msg(payload: bytes, shift:int = 0):
+def decode_msg(payload: bytes, shift:int = 0) -> str:
+    """
+    Декодирование сырого сообщения AIS в бинарную строку с 6-битным преобразованием.
+
+    Args:
+        payload (bytes): Часть сообщения АИС с данными с полезной информацией о судне.
+        shift (int): Параметр сдвига для обработки последних 6 бит.
+
+    Returns:
+        str: декодированная бинарная строка
+
+    Example:
+        >>> decode_msg(b"139tH:4v@0KmGgtbOq=UKlGd88PDC4h")
+        '000001000011001001111100011000001010000100111110010000000\
+        0000110111101010101111011111111001010100111111110010011011\
+        00101011011110100010111101100001000001000100000010100010011000100110000'
+    """
     binary_string = ""
     for idx, char in enumerate(payload):
         sb = ascii_8b_to_6b(char)
