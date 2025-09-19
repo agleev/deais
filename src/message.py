@@ -1,9 +1,7 @@
 from functools import wraps
 
-from values import *
-#MSGS_TYPES
+from src.values import *
 
-# def create_register():
     
 register_types = {}
 
@@ -144,7 +142,7 @@ def parse_ais_type_4_11(bit_string:str) -> str:
     raim = bit_string[148:149]
     radio = bit_string[149:]
 
-    return f"""{type};{mmsi};{imo};{lon};{lat}"""
+    return f"""{type};{mmsi};{lon};{lat}"""
 
 @register_func(18)
 def parse_ais_type_18(bit_string:str) -> str:

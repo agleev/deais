@@ -27,7 +27,7 @@ def get_ascii(value:str) -> str:
         str: ASCII-символ из словаря ascii_6_dict.
 
     Example:
-        >>> get_ascii("100001")
+        >>> get_ascii("000010")
         'B'
         
         >>> get_ascii("010100")

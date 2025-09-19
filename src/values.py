@@ -1,6 +1,6 @@
 import math
 
-from decode import (
+from src.decode import (
     bin_to_signed,
     proc_6bit_cha
 )            
@@ -96,7 +96,7 @@ def get_shiptype(val:str) -> int:
         
     """
     shiptype = int(val, 2)
-    shiptype = shiptype if (99 > shiptype > 0) else 0
+    shiptype = shiptype if (100 > shiptype > 0) else 0
     return shiptype
 
 def get_draught(val:str) -> float:
