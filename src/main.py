@@ -8,6 +8,18 @@ def get_msg_parts(raw: str):
 
 
 def preproc_multipart_msg(messages: Union[str, List[str]]) -> Tuple[str, int]:
+    """
+    Разбивка сообщения на составные части.
+
+    Функция принимает на вход сообщение (или части сообщения) АИС,
+    вовзвращает полезную нагрузку сообщения и количество битов заполнения для последних 6 бит сообщения.
+    
+    Args:
+        messages (str), list(str): строка или коллекция строк из нескольких частей одного сообщения.
+    Returns:
+        payloads (str): полезная нагрузка сообщения АИС с данными о судне.
+        shift (int): количество младших битов, которые нужно игнорировать.
+    """
 
     if isinstance(messages, str):
         messages = [messages]
@@ -47,31 +59,23 @@ def preproc_multipart_msg(messages: Union[str, List[str]]) -> Tuple[str, int]:
     
     return payloads, shift
     
-def ais_decode(raw):
+def ais_decode(raw: Union[str, List[str]]) -> str:
+    """
+    Декодирует сообщение АИС стандарта NMEA 0183.
+
+    Функция принимает на вход сообщение АИС, декодирует каждый символ в бинарное представление (в соответсвии 6-битной таблицы ASCII).
+    Битовая последовательность разбивается по заданным правилам (согласно типу сообщения) и извлекаются значения полей сообщения.
+    
+    Args:
+        raw (str), list(str): строка или коллекция строк из нескольких частей одного сообщения.
+    Returns:
+        msg_values (str): строка декодированного сообщения.
+    """
     if not raw:
-        return f"Empty message: {raw}"
+        return ValueError(f"Empty message: {raw}")
     
     payload, shift = preproc_multipart_msg(raw)
     binary_string = decode_msg(payload.encode(), shift)
     msg_type = get_msg_type(binary_string[:6])
     msg_values = message.call(msg_type, binary_string)
     return msg_values
-
-if __name__ == "__main__":
-    
-    s1 = [
-        [
-            '!AIVDM,2,1,0,A,544tCa`00001D9USD0084LU8400000000000000010N33vD`N3BhDPEC880000,0*69',
-            '!AIVDM,2,2,0,A,000000000>Ih,4*3D',
-        ],
-    '!AIVDM,1,1,,A,13aG`h0P000Htt<N0D0l4@T40000,0*7C',
-    '!AIVDM,1,1,0,B,33m;J<PP@B2QBtlcef@Ke9GJ0000Tq@,0*51',
-    '!AIVDM,1,1,0,A,402IPKAvV;Tc5vD8l0Um?4W00<0KH@8,0*6F',
-    ['!AIVDM,2,1,0,B,53m><=800000hg;KSP0tEUHTdTpL00000000000N0P;22t0000000000000000,0*23',
-    '!AIVDM,2,2,0,B,000000003p40,4*56'],
-    '!AIVDM,1,1,0,B,13`oTeh008vlkS0bn?K`l41l00S4Jip,0*42',
-
-    ]
-
-    for raw in s1:
-        print(ais_decode(raw))
