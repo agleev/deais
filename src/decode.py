@@ -15,16 +15,16 @@ ascii_6_dict = {
 
 def get_ascii(value:str) -> str:
     """
-    Преобразует двоичную строку в соотвествующий ASCII-символ.
+    Converts a binary string to ASCII character.
 
-    Функция принимает на вход двоиную строку, преобразует ее в целое число,
-    извлекает младшие 6 бит (через побитовую операцию И) и возвращает символ
-    имз словаря ascii_6_dict.
+    The function takes a binary string as input, converts it to an integer,
+    extracts the least significant 6 bits (via bitwise AND operation) and returns the character
+    from the ascii_6_dict dictionary.
 
     Args:
-        value (str): Двоичная строка (например, "000010", "010100")
+        value (str): Binary string (e.g., "000010", "010100")
     Returns:
-        str: ASCII-символ из словаря ascii_6_dict.
+        str: ASCII character from the ascii_6_dict dictionary.
 
     Example:
         >>> get_ascii("000010")
@@ -40,15 +40,15 @@ def get_ascii(value:str) -> str:
 
 def proc_6bit_cha(binary_data: str) -> str:
     """
-    Декодирует бинарные данные из 6-битной последовательности в строку из ASCII-символов.
+    Decodes binary data from 6-bit sequence to a string of ASCII characters.
 
-    Функция принимает на вход двоиную строку, разбивает ее на 6-битные блоки и 
-    каждый блок преобразуем в соответсвующий ASCII-символ с помощью функции get_ascii().
+    The function takes a binary string as input, splits it into 6-bit blocks and 
+    converts each block to ASCII character using the get_ascii() function.
 
     Args:
-        binary_data (str): бинарная строка (например, "000010010100")
+        binary_data (str): Binary string (e.g., "000010010100")
     Returns:
-        str: строка из ASCII-символов.
+        str: String of ASCII characters.
 
     Example:
         >>> proc_6bit_cha("000010010100")
@@ -67,15 +67,15 @@ def proc_6bit_cha(binary_data: str) -> str:
 
 def bin_to_signed(val: str) -> int:
     """
-    Преобразует двоичную строку в знаковое десятичсное число.
+    Converts a binary string to a signed decimal number.
 
-    Функция принимает на вход двоиную строку, определеяет знак числа по старшему биту,
-    преобразует в отрицательносе десятичное представление.
+    The function takes a binary string as input, determines the sign of the number by the most significant bit,
+    converts to negative decimal representation.
 
     Args:
-        val (str): двоичная строка, старший бит определяет знак
+        val (str): Binary string, the most significant bit determines the sign.
     Returns:
-        int: знаковое десятичное число.
+        int: Signed decimal number.
 
     Example:
         >>> bin_to_signed("1010110011110101101101001011")
@@ -97,23 +97,23 @@ def bin_to_signed(val: str) -> int:
 
 def bit_shifts(b:int, shift:int=0):
     """
-    Битовый сдвиг числа вправо.
+    Bitwise right shift of a number.
 
-    Функция принимает на вход числовое значение b
-    и shift - количество младших битов, которые нужно игнорировать
-    до ближайшей границы 6 бит. 
+    The function takes a numeric value b as input
+    and shift - the number of least significant bits to ignore
+    up to the nearest 6-bit boundary.
 
     Args:
-        b (int): числовое значение для обработки.
-        shift (int): количество битов заполнения.
+        b (int): Numeric value to process.
+        shift (int): Number of padding bits.
     Returns:
-        str: Двоичная строка
+        str: Binary string
 
     Example:
-        >>> bit_shifts(43,2)
+        >>> bit_shifts(43, 2)
         '1010'
         
-        >>> bit_shifts(23,3)
+        >>> bit_shifts(23, 3)
         '010'
         
     """
@@ -122,15 +122,15 @@ def bit_shifts(b:int, shift:int=0):
 
 def ascii_8b_to_6b(char:int) -> int:
     """
-    Преобразует 8-битный ASCII-код символа в 6-битное значение.
+    Converts 8-bit ASCII character code to 6-bit value.
     
-    Функция принимает на вход числовой код из 8-битной таблицы символов ASCII
-    и преобразует его в число 6-битной таблицы символов ASCII по заданному правилу. 
+    The function takes a numeric code from the 8-bit ASCII character table
+    and converts it to a number from the 6-bit ASCII character table according to the given rule.
     
     Args:
-        char (int): ASCII-код символа в диапазоне 0-255 
+        char (int): ASCII character code in range 0-255 
     Returns:
-        int: 6-битное значение в диапазоне 0-63
+        int: 6-bit value in range 0-63
         
     Example:
         >>> ascii_8b_to_6b(48)
@@ -148,14 +148,14 @@ def ascii_8b_to_6b(char:int) -> int:
 
 def decode_msg(payload: bytes, shift:int = 0) -> str:
     """
-    Декодирование сырого сообщения AIS в бинарную строку с 6-битным преобразованием.
+    Decoding raw AIS message to binary string with 6-bit conversion.
 
     Args:
-        payload (bytes): Часть сообщения АИС с данными с полезной информацией о судне.
-        shift (int): Параметр сдвига для обработки последних 6 бит.
+        payload (bytes): Part of AIS message with ship data payload.
+        shift (int): Shift parameter for processing the last 6 bits.
 
     Returns:
-        str: декодированная бинарная строка
+        str: Decoded binary string
 
     Example:
         >>> decode_msg(b"139tH:4v@0KmGgtbOq=UKlGd88PDC4h")
