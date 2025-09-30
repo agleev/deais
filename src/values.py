@@ -5,13 +5,14 @@ from src.decode import (
     proc_6bit_cha
 )            
 
-def get_lan_lot(val:str) -> float:
+def get_lon_lat(val:str) -> float:
     """
-    Преобразует битовую последовательность в долготу/широту.
+    Converts a bit sequence to latitude/longitude.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        float: долгота/широта в градусах.
+        float: Latitude/longitude in degrees.
         
     """
     val = bin_to_signed(val)
@@ -19,11 +20,12 @@ def get_lan_lot(val:str) -> float:
 
 def get_sog(val:str) -> float:
     """
-    Преобразует битовую последовательность в скорость.
+    Converts a bit sequence to speed over ground.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        float: скорость в узлах.
+        float: Speed in knots.
         
     """
     val = int(val, 2)
@@ -32,11 +34,12 @@ def get_sog(val:str) -> float:
 
 def get_rot(val:str) -> float:
     """
-    Преобразует битовую последовательность в угловую скорость поворота судна.
+    Converts a bit sequence to vessel's rate of turn.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        float: скорость градусы/минута.
+        float: Turn rate in degrees per minute.
         
     """
     turn = bin_to_signed(val)
@@ -51,11 +54,12 @@ def get_rot(val:str) -> float:
 
 def get_cog(val:str) -> float:
     """
-    Преобразует битовую последовательность в фактический курс движения судна относительно севера.
+    Converts a bit sequence to course over ground relative to true north.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        float: угол в градусах.
+        float: Angle in degrees.
         
     """
     cog = int(val, 2)
@@ -64,22 +68,24 @@ def get_cog(val:str) -> float:
 
 def get_nav_status(val:str) -> int:
     """
-    Преобразует битовую последовательность в навигационный статус судна.
+    Converts a bit sequence to vessel's navigation status.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        int: код статуса.
+        int: Status code.
         
     """
     return int(val, 2)
 
 def get_heading(val:str) -> int:
     """
-    Преобразует битовую последовательность в навигационный статус судна.
+    Converts a bit sequence to vessel's true heading.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        int: код статуса.
+        int: Heading in degrees.
         
     """
     hdg = int(val, 2)
@@ -88,11 +94,12 @@ def get_heading(val:str) -> int:
 
 def get_shiptype(val:str) -> int:
     """
-    Преобразует битовую последовательность в код типа судна.
+    Converts a bit sequence to vessel type code.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        int: код типа судна.
+        int: Vessel type code.
         
     """
     shiptype = int(val, 2)
@@ -101,12 +108,12 @@ def get_shiptype(val:str) -> int:
 
 def get_draught(val:str) -> float:
     """
-    Преобразует битовую последовательность в уровень осадки судна.
-
+    Converts a bit sequence to vessel's draught level.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        float: осадка судна в метрах.
+        float: Vessel draught in meters.
         
     """
     draught = int(val, 2)
@@ -114,71 +121,86 @@ def get_draught(val:str) -> float:
 
 def get_mmsi(val:str) -> int:
     """
-    Преобразует битовую последовательность в MMSI.
+    Converts a bit sequence to MMSI (Maritime Mobile Service Identity).
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        int: ID приемника судна в системе  АИС.
+        int: Vessel receiver ID in AIS system.
         
     """
     return int(val,2)
 
 def get_imo(val:str) -> int:
     """
-    Преобразует битовую последовательность в IMO судна.
+    Converts a bit sequence to vessel's IMO number.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        int: ID в реестре Международной морской организации.
+        int: ID in International Maritime Organization registry.
         
     """
     return int(val,2)
 
 def get_msg_type(val:str) -> int:
     """
-    Преобразует битовую последовательность в тип сообщения АИС.
+    Converts a bit sequence to AIS message type.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        int: тип сообщения АИС.
+        int: AIS message type.
         
     """
     return int(val,2)
 
 def get_demension_vessel(val:str) -> int:
     """
-    Преобразует битовую последовательность в расстояние от
-    антены передатчика до носа/кормы/правого и левого бортов судна.
+    Converts a bit sequence to distance from transmitter antenna
+    to bow/stern/port/starboard sides of the vessel.
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
     Returns:
-        float: расстание в метрах.
+        int: Distance in meters.
         
     """
     return int(val,2)
 
 def clear_str_attr(value:str):
+    """
+    Cleans string attributes by removing '@' characters.
+    
+    Args:
+        value (str): String to clean.
+    Returns:
+        str: Cleaned string.
+    """
     return value.replace("@", "") # 000000 -> "@"
 
 def get_string_field(bit_string:str) -> str:
     """
-    Преобразует битовую последовательность в строковые атрибуты судна.
+    Converts a bit sequence to vessel's string attributes.
+    
     Args:
-        val (str): битовая последовательность.
+        bit_string (str): Bit sequence.
     Returns:
-        str: строка из ASCII-символов.
+        str: String of ASCII characters.
         
     """
     string_field = proc_6bit_cha(bit_string)
     return clear_str_attr(string_field)
 
-def get_eta(val, threshold):
+def get_eta(val, threshold) -> str:
     """
-    Преобразует битовую последовательность в расчетные дату и время прибытия судна.
+    Converts a bit sequence to estimated time of arrival (ETA).
+    
     Args:
-        val (str): битовая последовательность.
+        val (str): Bit sequence.
+        threshold (int): Maximum allowed value for the ETA component.
     Returns:
-        str: отметка минуты/часа/дня/месяца.
+        str: Formatted minute/hour/day/month.
         
     """
     eta_attr = int(val, 2)
