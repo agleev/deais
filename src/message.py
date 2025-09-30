@@ -1,23 +1,39 @@
 from functools import wraps
-
+from typing import Dict, Callable, Any, Union
 from src.values import *
 
     
 register_types = {}
 
-def register_func(msg_type):
+def register_func(msg_type: Union[int, str]) -> Callable:
     """
-    Декоратор для регистрации функции-обработчика для определенного типа данных.
+    Decorator for registering a handler function for specific AIS message type.
 
     Args:
-        msg_type (int): тип сообщения АИС.
+        msg_type: AIS message type (integer or string for special cases like '24a', '24b')
+    Returns:
+        Decorator function
     """
-    def deco(func):
+    def deco(func: Callable) -> Callable:
         register_types[msg_type] = func
         return func
     return deco
 
-def call(msg_type,*args,**kwargs):
+def call(msg_type: Union[int, str], *args,**kwargs) -> str:
+    """
+    Calls the appropriate handler function for the given message type.
+
+    Args:
+        msg_type: AIS message type to process
+        *args: Positional arguments to pass to handler
+        **kwargs: Keyword arguments to pass to handler
+
+    Returns:
+        Processed message string
+
+    Raises:
+        ValueError: If message type is not registered
+    """
     if msg_type not in register_types:
         raise ValueError
     return register_types[msg_type](*args,**kwargs)
@@ -29,18 +45,18 @@ def call(msg_type,*args,**kwargs):
 def parse_ais_type_1_2_3(bit_string:str) -> str:
     
     """
-    Декомпозиция 1,2 и 3 типов сообщений АИС.
+    Decomposition of AIS message types 1, 2 and 3.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
-    
-    """ 
+        String with message attributes.
+    """
     
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -49,8 +65,8 @@ def parse_ais_type_1_2_3(bit_string:str) -> str:
     rot = get_rot(bit_string[42:50])
     sog = get_sog(bit_string[50:60])
     accuracy = bit_string[60:61]
-    lon = get_lan_lot(bit_string[61:89])
-    lat = get_lan_lot(bit_string[89:116])
+    lon = get_lon_lat(bit_string[61:89])
+    lat = get_lon_lat(bit_string[89:116])
     cog = get_cog(bit_string[116:128])
     heading = get_heading(bit_string[128:137])
     second = bit_string[137:143]
@@ -65,16 +81,17 @@ def parse_ais_type_1_2_3(bit_string:str) -> str:
 def parse_ais_type_5(bit_string:str) -> str:
 
     """
-    Декомпозиция 5 типа сообщения АИС.
+    Decomposition of AIS message type 5.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
     """ 
 
@@ -110,16 +127,17 @@ def parse_ais_type_5(bit_string:str) -> str:
 def parse_ais_type_4_11(bit_string:str) -> str:
 
     """
-    Декомпозиция 4 и 11 типов сообщений АИС.
+    Decomposition of AIS message types 4 and 11.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
     """ 
     
@@ -135,8 +153,8 @@ def parse_ais_type_4_11(bit_string:str) -> str:
     second = bit_string[72:78]
 
     accuracy = bit_string[78:79]
-    lon = get_lan_lot(bit_string[79:107])
-    lat = get_lan_lot(bit_string[107:134])
+    lon = get_lon_lat(bit_string[79:107])
+    lat = get_lon_lat(bit_string[107:134])
     epfd = bit_string[134:138]
     spare = bit_string[138:148]
     raim = bit_string[148:149]
@@ -148,16 +166,17 @@ def parse_ais_type_4_11(bit_string:str) -> str:
 def parse_ais_type_18(bit_string:str) -> str:
     
     """
-    Декомпозиция 18 типа сообщения АИС.
+    Decomposition of AIS message type 18.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
     """ 
     type = get_msg_type(bit_string[:6])
@@ -167,8 +186,8 @@ def parse_ais_type_18(bit_string:str) -> str:
     reserved = bit_string[38:46]
     sog = get_sog(bit_string[46:56])
     accuracy = bit_string[56:57]
-    lon = get_lan_lot(bit_string[57:85])
-    lat = get_lan_lot(bit_string[85:112])
+    lon = get_lon_lat(bit_string[57:85])
+    lat = get_lon_lat(bit_string[85:112])
     cog = get_cog(bit_string[112:124])
     heading = get_heading(bit_string[124:133])
 
@@ -189,16 +208,17 @@ def parse_ais_type_18(bit_string:str) -> str:
 def parse_ais_type_19(bit_string:str) -> str:
 
     """
-    Декомпозиция 19 типа сообщения АИС.
+    Decomposition of AIS message type 19.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
     """ 
 
@@ -209,8 +229,8 @@ def parse_ais_type_19(bit_string:str) -> str:
     reserved = bit_string[38:46]
     sog = get_sog(bit_string[46:56])
     accuracy = bit_string[56:57]
-    lon = get_lan_lot(bit_string[57:85])
-    lat = get_lan_lot(bit_string[85:112])
+    lon = get_lon_lat(bit_string[57:85])
+    lat = get_lon_lat(bit_string[85:112])
     cog = get_cog(bit_string[112:124])
     heading = get_heading(bit_string[124:133])
 
@@ -235,18 +255,19 @@ def parse_ais_type_19(bit_string:str) -> str:
 @register_func('24a')
 def parse_ais_type_24a(bit_string:str) -> str:
     """
-    Декомпозиция 24 типа сообщения АИС для судна класса A.
+    Decomposition of AIS message type 24 for Class A vessels.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
-    """    
+    """  
     
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -261,18 +282,19 @@ def parse_ais_type_24a(bit_string:str) -> str:
 @register_func('24b')
 def parse_ais_type_24b(bit_string:str) -> str:
     """
-    Декомпозиция 24 типа сообщения АИС для судна класса B.
+    Decomposition of AIS message type 24 for Class B vessels.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
-    """    
+    """  
 
     type = get_msg_type(bit_string[:6])
     repeat = bit_string[5:8]
@@ -299,16 +321,17 @@ def parse_ais_type_24b(bit_string:str) -> str:
 @register_func(27)
 def parse_ais_type_27(bit_string:str) -> str:
     """
-    Декомпозиция 27 типа сообщения АИС.
+    Decomposition of AIS message type 27.
     
-    Функция принимает на вход бинарную строку,
-    разбивает последовательность бит по заданным правилам
-    и преобразует атрибуты данных согласно спецификации
+    Function takes a binary string as input,
+    splits the bit sequence according to specified rules
+    and converts data attributes according to specification.
     
     Args:
-        binary_data (str): бинарная строка.
+        bit_string: Binary string containing AIS message data.
+        
     Returns:
-        str: строка с атрибутами сообщения.
+        String with message attributes.
     
     """
     
@@ -319,8 +342,8 @@ def parse_ais_type_27(bit_string:str) -> str:
     accuracy = bit_string[38:39]
     raim = bit_string[39:40]
     status = get_nav_status(bit_string[40:44])
-    lon = get_lan_lot(bit_string[44:62])
-    lat = get_lan_lot(bit_string[62:79])
+    lon = get_lon_lat(bit_string[44:62])
+    lat = get_lon_lat(bit_string[62:79])
     sog = get_sog(bit_string[79:85])
     cog = get_cog(bit_string[85:94])
     gnss = bit_string[94:95] 
