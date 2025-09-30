@@ -9,16 +9,14 @@ def get_msg_parts(raw: str):
 
 def preproc_multipart_msg(messages: Union[str, List[str]]) -> Tuple[str, int]:
     """
-    Разбивка сообщения на составные части.
-
-    Функция принимает на вход сообщение (или части сообщения) АИС,
-    вовзвращает полезную нагрузку сообщения и количество битов заполнения для последних 6 бит сообщения.
+    Assemble multipart AIS message from fragments.
     
     Args:
-        messages (str), list(str): строка или коллекция строк из нескольких частей одного сообщения.
+        messages: Single message string or list of message fragments
     Returns:
-        payloads (str): полезная нагрузка сообщения АИС с данными о судне.
-        shift (int): количество младших битов, которые нужно игнорировать.
+        Assembled payload and fill bits for the last fragment
+    Raises:
+        ValueError: If messages are invalid or incomplete
     """
 
     if isinstance(messages, str):
@@ -61,15 +59,17 @@ def preproc_multipart_msg(messages: Union[str, List[str]]) -> Tuple[str, int]:
     
 def ais_decode(raw: Union[str, List[str]]) -> str:
     """
-    Декодирует сообщение АИС стандарта NMEA 0183.
+    Decoding AIS Message for NMEA 0183 standard.
 
-    Функция принимает на вход сообщение АИС, декодирует каждый символ в бинарное представление (в соответсвии 6-битной таблицы ASCII).
-    Битовая последовательность разбивается по заданным правилам (согласно типу сообщения) и извлекаются значения полей сообщения.
+    The function accepts an AIS message as input, decodes each character into a binary str (according to a 6-bit ASCII table).
+    The bit sequence is split according to the specified rules (according to the message type) and the values of the message fields are extracted.
     
     Args:
-        raw (str), list(str): строка или коллекция строк из нескольких частей одного сообщения.
+        raw: Raw NMEA message string
     Returns:
-        msg_values (str): строка декодированного сообщения.
+        Parsed NMEA message object
+    Raises:
+        ValueError: If message format is invalid
     """
     if not raw:
         return ValueError(f"Empty message: {raw}")
